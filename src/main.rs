@@ -14,6 +14,7 @@ mod llm_response;
 mod state_machine;
 mod utils;
 mod vector_utils;
+mod docker_tool;
 
 static VERBOSE: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
 
@@ -44,6 +45,19 @@ Usage:
                 .global(true)
                 .action(ArgAction::SetTrue),
         )
+        // This section has added by AB to immpement an issue #19
+        .arg(
+            Arg::new("environment")
+                .long("environment")
+                .help("By default --environment=host; or use --environment=docker")
+                .default_value("host")
+                .global(true)
+                .value_parser(*&[
+                    "host",
+                    "docker"
+                ]),
+        )
+        // End of section of issue #19
         .arg(
             Arg::new("lang")
                 .long("lang")
@@ -107,6 +121,32 @@ Usage:
 
     let verbose = matches.get_one::<bool>("verbose").unwrap();
     *VERBOSE.lock().unwrap() = *verbose;
+
+    // This section has added by AB to immpement an issue #19
+
+    let environment = matches.get_one::<String>("environment");
+    match environment {
+        None => println!("Couldn't parse the environment"),
+        Some(s) => {
+            match s.as_str () {
+                "host" => { 
+                    println!("Selected environment: host"); 
+                },
+                "docker" => {
+                    println!("Selected environment: docker");
+                    // function which prepare environment for Docker should be call here
+                }
+                _ => {
+                    println!("Unknown type of the environment");
+                    std::process::exit(1);
+                }
+            }
+        }
+    }
+
+    //dbg!(environment);
+
+    // End of section of issue #19
 
     let lang: Lang = matches
         .get_one::<String>("lang")
