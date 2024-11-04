@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 use std::sync::Mutex;
+use futures::executor::block_on;
 
 mod build_tool;
 mod cache;
@@ -18,11 +19,22 @@ mod docker_tool;
 
 static VERBOSE: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
 
+// This section has added by AB to immpement an issue #19
+
+// Set environment type to host by default
+// Define it as global variable to let all functions use it
+// Probably bad idea but it works otherwise it needs to rewrite a lot of code
+
+static ENVTYPE: Lazy<Mutex<docker_tool::EnvironmentType>> = Lazy::new(|| Mutex::new(docker_tool::EnvironmentType::host));
+
+// End of section of issue #19
+
 const MAX_NUMBER_OF_ATTEMPTS: i32 = 5;
 const OLLAMA_API: &str = "http://127.0.0.1:11434/api/generate";
 const OLLAMA_EMB: &str = "http://127.0.0.1:11434/api/embeddings";
 
 fn main() {
+
     std::env::set_var("OLLAMA_NUM_PARALLEL", "2");
     let matches = Command::new("rustsn - Rust Snippets Generator")
         .version("0.7.0")
@@ -130,11 +142,14 @@ Usage:
         Some(s) => {
             match s.as_str () {
                 "host" => { 
-                    println!("Selected environment: host"); 
+                    println!("Selected environment: host");
+                    *ENVTYPE.lock().unwrap() = docker_tool::EnvironmentType::host; 
                 },
                 "docker" => {
                     println!("Selected environment: docker");
-                    // function which prepare environment for Docker should be call here
+                    *ENVTYPE.lock().unwrap() = docker_tool::EnvironmentType::docker; 
+                    // Temporarly - only for debug
+                    docker_tool::check_docker();
                 }
                 _ => {
                     println!("Unknown type of the environment");
