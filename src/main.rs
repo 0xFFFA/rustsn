@@ -138,7 +138,9 @@ Usage:
 
     let environment = matches.get_one::<String>("environment");
     match environment {
-        None => println!("Couldn't parse the environment"),
+        None => {
+            panic!("Couldn't parse the environment");
+        }
         Some(s) => {
             match s.as_str () {
                 "host" => { 
@@ -148,7 +150,12 @@ Usage:
                 "docker" => {
                     println!("Selected environment: docker");
                     *ENVTYPE.lock().unwrap() = docker_tool::EnvironmentType::docker; 
-                    // Temporarly - only for debug
+                    // This function checks:
+                    // 1. Connection to the Docker
+                    // 2. Containers contain "ollama"
+                    // 3. Images contain "ollama"
+                    // The function returns nothing in case of success
+                    // Or calls panic in other cases 
                     docker_tool::check_docker();
                 }
                 _ => {
