@@ -14,10 +14,6 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
             let result_str = match result_str_opt {
                 None => {
                     let command_parts = command_str.split(" ").collect::<Vec<&str>>();
-                    // Added to understand code
-                    //let c_p_debug = command_parts.clone();
-                    //dbg!(c_p_debug);
-                    //
                     let args = command_parts[1..].to_vec();
                     let output = std::process::Command::new(command_parts[0])
                         .args(args)

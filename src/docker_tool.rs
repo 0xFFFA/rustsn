@@ -1,15 +1,18 @@
 // Add these libs to work with a Docker
 use bollard::Docker;
-use bollard::container::ListContainersOptions;
 use bollard::image::ListImagesOptions;
-use std::collections::HashMap;
+use bollard::image::CreateImageOptions;
+use bollard::container::{CreateContainerOptions, Config as ContainerConfig, StartContainerOptions};
+use bollard::service::HostConfig; 
 use std::default::Default;
 
+use futures::StreamExt;
+
 use tokio::runtime::Runtime;
-
-
+use crate::{Lang, VERBOSE};
 
 // Define entity which contains the type of the environment - host or docker
+#[allow(non_camel_case_types)]
 pub enum EnvironmentType {
     host,
     docker
@@ -25,6 +28,7 @@ pub enum EnvironmentType {
 // Bollard::Docker lib requires to call async functions
 // with Tokio library.
 
+/* Commented as unused function
 async fn check_docker_containers (dock: bollard::Docker) -> 
         Result<Vec<bollard::models::ContainerSummary>, String> {
 
@@ -50,6 +54,7 @@ async fn check_docker_containers (dock: bollard::Docker) ->
         }
     }
 }
+*/
 
 // This function "wrapped in Future".
 //
@@ -92,16 +97,13 @@ async fn check_docker_images (dock: bollard::Docker) ->
 // The role is:
 //
 // 1. Connects to the Docker
-// 2. Checks list of containers and founds the Ollama there
-// 3. Checks list of images and founds the Ollama there
+// 2. Checks list of images and founds the language specific image there
 //
-// If any of conditions isn't completed, 
-// it ends and prints the status 
+// It returns the status regarding an image  
 //
-// Note. Add expanded information to helping user to solve problems.
-// Like if system couldn't connect to the Docker - how to 
-// check the status in command line
-pub fn check_docker () 
+// Here is an agreement of naming the containers
+// rustsn_<language>_container
+pub fn check_docker (lang: &Lang) -> Result<bool, String>
 {
     // Connect to the Docker
     let docker = match Docker::connect_with_socket_defaults() {
@@ -109,52 +111,10 @@ pub fn check_docker ()
         Err (e) => panic!("Couldn't connect to Docker {:?}", e)
     };
 
-    // Define variable to keeping a list of containers
-    let mut containers : Vec<bollard::models::ContainerSummary> = Vec::new();
-    // Run function "check_docker_containers" at Tokio context and return the value
-    containers = match Runtime::new().unwrap().block_on (check_docker_containers(docker.clone ())) {
-        Ok (c) => c,
-        Err (e) => panic! ("Couldn't get list of containers {:?}", e)
-    };
-
-    // Processing the list of containers
-    //
-    // The documentaton for the bollard::models::ContainerSummary
-    // https://docs.rs/bollard/latest/bollard/models/struct.ContainerSummary.html
-    //
-    // Below function checks all names of the containers and compares
-    // with the word "ollama"
-
-    // Its need to find first container and if it found - break
-    let mut ollama_checker : bool = false;
-    // Processing each container with iterator cont
-    for cont in &containers {
-        // Processing all names with iterator i
-        for mut i in cont.names.clone () {
-            // Variable "name" contains the name of the container
-            let mut name = i.pop ().expect("Unknown error at procedure of parsing list of Docker containers").clone ();
-            // If it contains "ollama" then OK and break the cicle
-            if name.contains ("ollama") {
-                println! ("Ollama container is found");
-                ollama_checker = true;
-                break;
-            } 
-        }
-        if ollama_checker == true {
-            break;
-        }        
-    }
-    if ollama_checker == false {
-        println! ("Ollama container is not found");
-        println! ("Please read the documentation");
-        panic! ();
-    }
-
-
     // Define variable to keeping a list of images
-    let mut images : Vec<bollard::models::ImageSummary> = Vec::new();
+    //let mut images : Vec<bollard::models::ImageSummary> = Vec::new();
     // Run function "check_docker_images" at Tokio context and return the value
-    images = match Runtime::new().unwrap().block_on (check_docker_images(docker.clone ())) {
+    let images = match Runtime::new().unwrap().block_on (check_docker_images(docker.clone ())) {
         Ok (i) => i,
         Err (e) => panic! ("Couldn't get list of images {:?}", e)
     };
@@ -165,39 +125,172 @@ pub fn check_docker ()
     // https://docs.rs/bollard/latest/bollard/models/struct.ImageSummary.html
     //
     // Below function checks all names of the containers and compares
-    // with the word "ollama"
+    // with the language specific word
 
     // Its need to find first image and if it found - break
-    let mut ollama_checker : bool = false;
+    //let mut image_checker : bool = false;
     // Processing each image with iterator img
     for img in &images {
         // Processing all repo_tags with iterator i
-        for mut i in img.repo_tags.clone () {
+        for i in img.repo_tags.clone () {
             // Variable "i" contains the name of the image
-            //let mut name = i.pop ().expect("Unknown error at procedure of parsing list of Docker images").clone ();
-            // If it contains "ollama" then OK and break the cicle
-            if i.contains ("ollama") {
-                println! ("Ollama image is found");
-                ollama_checker = true;
-                break;
+            // If it contains language specific work then OK and break the cicle
+            if i.contains (&format!("rustsn_{}_container", &lang.to_string())) {
+                println! ("Image for {:?} is found", lang);
+                //image_checker = true;
+                return Ok(true)
             } 
         }
-        if ollama_checker == true {
-            break;
-        }         
     }
-    if ollama_checker == false {
-        println! ("Ollama image is not found");
-        println! ("Please read the documentation");
-        panic! ();
-    }
+
+    return Ok(false)
 
     // At this point the program:
     // 1. Check the connection to the Docker
-    // 2. Check that container contain "ollama"
-    // 3. Check that images contain "ollama"
-    // The checking is complete
+    // 2. Check that images contain language specific image
+    // It returns true if checking is OK
+    // Or returns false if doesn't found language specific image
 
-    println!("Checking the Docker has done");
 
+}
+
+// This function creates image and container
+//
+// It returns true in case of success
+// And returns false in case of something goes wrong
+//
+// Here is an agreement of naming the containers
+// rustsn_<language>_container
+pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
+    let docker = Docker::connect_with_local_defaults()
+        .map_err(|e| format!("Couldn't connect to Docker: {}", e))?;
+
+    // Create context to running async functions
+    // Some Bollard::Docker functions are async
+    let rt = Runtime::new().unwrap();
+    rt.block_on(async {
+        // Set image options using language specific image name
+        // The image name is defined in Lang::get_image_name()
+        // Lang::get_image_name() defined at main.rs
+        let image_options = Some(CreateImageOptions{
+            from_image: lang.get_image_name()?,
+            ..Default::default()
+        });
+        // Create stream to get the result of creating image
+        let mut stream = docker.create_image(image_options, None, None);
+        // Process the stream
+        while let Some(result) = stream.next().await {
+            match result {
+                Ok(output) => {
+                    if *VERBOSE.lock().unwrap() {
+                        println!("Create an image: {:?}", output);
+                    }
+                },
+                Err(e) => return Err(format!("Couldn't create an image: {}", e))
+            }
+        }
+
+        // Set container name in accordance with rules of naming
+        let container_name = format!("rustsn_{}_container", lang.to_string().to_lowercase());
+
+        // Set container options
+        //let container_options = Some(CreateContainerOptions{
+        let container_options: CreateContainerOptions<String> = CreateContainerOptions {
+            name: container_name,
+            ..Default::default()
+        };
+
+        // Get an absolute path to sandbox directory
+        let sandbox_path = std::env::current_dir()
+        .map_err(|e| format!("Couldn't get the path to sandbox directory: {}", e))?
+        .join("sandbox")
+        .to_string_lossy()
+        .to_string();
+
+        // Set host config
+        let host_config = HostConfig {
+            binds: Some(vec![
+                format!("{}:/app", sandbox_path)
+            ]),
+            ..Default::default()
+        };
+
+        // Set container config
+        let config = ContainerConfig {
+            image: Some(lang.get_image_name()?),
+            tty: Some(true),
+            working_dir: Some("/app"),
+            host_config: Some(host_config),
+            ..Default::default()
+        };
+
+        // Create container
+        let container = match docker.create_container(Some(container_options), config).await {
+            Ok(container_info) => {
+                if *VERBOSE.lock().unwrap() {
+                    println!("Container has been created: {:?}", container_info);
+                }
+                container_info
+            },
+            Err(e) => return Err(format!("Couldn't create a container: {}", e))
+        };
+
+        // Running container
+        match docker.start_container(&container.id, None::<StartContainerOptions<String>>).await {
+            Ok(_) => {
+                if *VERBOSE.lock().unwrap() {
+                    println!("Co");
+                }
+                Ok(true)
+            },
+            Err(e) => Err(format!("Couldn't start a container: {}", e))
+        }
+    })
+}
+
+// This function run the container
+//
+// It returns true in case of success
+// And returns false in case of something goes wrong
+//
+// Initially it checks that the container is running
+// If not - it starts the container
+//
+// Here is an agreement of naming the containers
+// rustsn_<language>_container
+pub fn run_container (lang: &Lang) -> Result<bool, String> {
+    
+    // Connect to the Docker
+    let docker = Docker::connect_with_local_defaults()
+        .map_err(|e| format!("Couldn't connect to Docker: {}", e))?;
+
+    // Create context to running async functions
+    // Some Bollard::Docker functions are async
+    let rt = Runtime::new().unwrap();
+    rt.block_on(async {
+        // Set container name in accordance with rules of naming
+        let container_name = format!("rustsn_{}_container", lang.to_string().to_lowercase());
+        
+        // Check that the container is running
+        match docker.inspect_container(&container_name, None).await {
+            Ok(container_info) => {
+                if container_info.state.unwrap().running.expect("Couldn't check the container state") {
+                    return Ok(true);
+                }
+                else {
+                    // Start the container
+                    match docker.start_container(&container_name, None::<StartContainerOptions<String>>).await {
+                        Ok(_) => {
+                            if *VERBOSE.lock().unwrap() {
+                                println!("Container is {} running", container_name);
+                            }
+                            return Ok(true)
+                        },
+                        Err(e) => return Err(format!("Couldn't start a container {}: {}", container_name, e))
+                    };     
+                }
+            }
+            Err(e) => return Err(format!("Couldn't check the container {}: {}", container_name, e))
+        };
+    })
 }

@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::fmt::Display;
 use std::str::FromStr;
 use std::sync::Mutex;
-use futures::executor::block_on;
 
 mod build_tool;
 mod cache;
@@ -156,7 +155,7 @@ Usage:
                     // 3. Images contain "ollama"
                     // The function returns nothing in case of success
                     // Or calls panic in other cases 
-                    docker_tool::check_docker();
+                    // docker_tool::check_docker();
                 }
                 _ => {
                     println!("Unknown type of the environment");
@@ -286,6 +285,37 @@ Usage:
             println!("Explain what the function should do:");
             let question: String = ask();
 
+            //  Check the Environment type
+            // If docker = run check_docker and if it returns false 
+            // (which means language specific image not found)
+            // then run create_image_and_container
+            // And then run the container by docker_tool::run_container
+            match *ENVTYPE.lock().unwrap() {
+                docker_tool::EnvironmentType::docker => {
+                    // Check the Docker
+                    match docker_tool::check_docker(&lang) {
+                        Ok(true) => {} /* do nothing */
+                        Ok(false) => {
+                            // Create the image and the container
+                            if let Err(e) = docker_tool::create_image_and_container(&lang) {
+                                panic!("Failed to create container: {}", e);
+                            }
+                        },
+                        Err(e) => panic!("Couldn't connect to Docker: {}", e)
+                    };
+                    // Run the container
+                    match docker_tool::run_container(&lang) {
+                        Ok(true) => {} /* do nothing */
+                        Ok(false) => {
+                            panic!("Failed to run the container");
+                        }
+                        Err(e) => panic!("Failed to run the container: {}", e)
+                    };
+                }
+                docker_tool::EnvironmentType::host => {
+                    // Do nothing
+                }
+            };
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
         }
@@ -508,6 +538,26 @@ impl FromStr for Lang {
             "cs" => Ok(Lang::CSharp),
             "swift" => Ok(Lang::Swift),
             _ => Err(format!("Unsupported language: {}", s)),
+        }
+    }
+}
+
+impl Lang {
+    pub fn get_image_name(&self) -> Result<&'static str, String>  {
+        match self {
+            Lang::Rust => Ok("rust:latest"),
+            Lang::Java => Ok("openjdk:latest"),
+            Lang::JavaScript => Ok("node:latest"),
+            Lang::TypeScript => Ok("node:latest"),
+            Lang::Scala => Ok("sbtscala/scala-sbt:eclipse-temurin-17.0.5_8_1.8.2_2.13.10"),
+            Lang::Python => Ok("python:latest"),
+            Lang::C => Ok("gcc:latest"), 
+            Lang::Cpp => Ok("gcc:latest"),
+            Lang::Kotlin => Ok("zenika/kotlin:latest"),
+            Lang::Php => Ok("php:latest"),
+            Lang::CSharp => Ok("mcr.microsoft.com/dotnet/sdk:latest"),
+            Lang::Swift => Ok("swift:latest"),
+            _ => Err(format!("Unsupported language: {}", self)),
         }
     }
 }
