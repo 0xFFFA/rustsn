@@ -135,7 +135,8 @@ pub fn check_docker (lang: &Lang) -> Result<bool, String>
         for i in img.repo_tags.clone () {
             // Variable "i" contains the name of the image
             // If it contains language specific work then OK and break the cicle
-            if i.contains (&format!("rustsn_{}_container", &lang.to_string())) {
+            //if i.contains (&format!("rustsn_{}_container", &lang.to_string())) {
+                if i.contains (&format!("{}", &lang.to_string())) {
                 println! ("Image for {:?} is found", lang);
                 //image_checker = true;
                 return Ok(true)
@@ -225,26 +226,15 @@ pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
         };
 
         // Create container
-        let container = match docker.create_container(Some(container_options), config).await {
+        match docker.create_container(Some(container_options), config).await {
             Ok(container_info) => {
                 if *VERBOSE.lock().unwrap() {
                     println!("Container has been created: {:?}", container_info);
                 }
-                container_info
+                return Ok(true)
             },
             Err(e) => return Err(format!("Couldn't create a container: {}", e))
         };
-
-        // Running container
-        match docker.start_container(&container.id, None::<StartContainerOptions<String>>).await {
-            Ok(_) => {
-                if *VERBOSE.lock().unwrap() {
-                    println!("Co");
-                }
-                Ok(true)
-            },
-            Err(e) => Err(format!("Couldn't start a container: {}", e))
-        }
     })
 }
 

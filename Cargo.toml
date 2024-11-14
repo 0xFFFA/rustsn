@@ -24,6 +24,7 @@ once_cell = "1.20.2"
 bollard = "*"
 futures="0.3"
 tokio = { version = "1", features = ["full"] }
+ users = "0.11"
 
 [profile.release]
 lto = true
