@@ -40,6 +40,8 @@ Necessary changes:
   - create_container
 - add new function check_docker_container
 - add new function stop_container
+- add new function remove_container
+- add prompt to function create_image to download image from the Docker Hub
 */
 pub mod check_docker_images;
 pub mod check_docker;

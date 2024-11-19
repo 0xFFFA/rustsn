@@ -152,15 +152,19 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                 None => {
                     let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
-                    /*let output = std::process::Command::new(command_parts[0])
+                    /*
+                    let output = std::process::Command::new(command_parts[0])
                         .args(args)
                         .current_dir("sandbox")
                         .output()
-                        .unwrap();*/
+                        .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
                     let output = match run_execution(&EnvironmentType::docker, &Lang::Rust, command_str) {
                         Ok(output) => output,
                         Err(e) => return (false, e)
                     };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -207,11 +211,20 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     } else {
                         command_parts[0].to_string()
                     };
+                    /*
+                    Commented old functionality
                     let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::Java, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -255,11 +268,19 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     } else {
                         command_parts[0].to_string()
                     };
+                    /*
                     let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::Scala, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -298,11 +319,18 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     let args = command_parts[1..].to_vec();
                     // check OS if windows then add ".cmd" to command name in command_parts[0]
                     let command = command_parts[0].to_string();
-                    let output = std::process::Command::new(command)
+                    /*let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::Swift, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -345,11 +373,19 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         command_parts[0].to_string()
                     };
                     // println!("{}, {:?}", command, args);
+                    /*
                     let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::Kotlin, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -389,11 +425,17 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                 None => {
                     let command_parts = command_str.split(" ").collect::<Vec<&str>>();
                     let args = command_parts[1..].to_vec();
-                    let output = std::process::Command::new(command_parts[0])
-                        .args(args)
-                        .current_dir("sandbox")
-                        .output()
-                        .unwrap();
+                    //let output = std::process::Command::new(command_parts[0])
+                    //    .args(args)
+                    //    .current_dir("sandbox")
+                    //    .output()
+                    //    .unwrap();
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::Python, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -436,11 +478,19 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     } else {
                         command_parts[0].to_string()
                     };
+                    /*
                     let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::JavaScript, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -483,11 +533,19 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                     } else {
                         command_parts[0].to_string()
                     };
+                    /*
                     let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::TypeScript, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
@@ -530,13 +588,19 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         command_parts[0].to_string()
                     };
                     println!("ARGS - {:?}", args);
-
+                    /*
                     let output = std::process::Command::new(&command)
                         .args(&args)
                         .current_dir("sandbox")
                         .output()
                         .unwrap();
-
+                    */
+                    // This section has added by AB to immpement an issue #19
+                    let output = match run_execution(&EnvironmentType::docker, &Lang::Php, command_str) {
+                        Ok(output) => output,
+                        Err(e) => return (false, e)
+                    };
+                    // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
                     let std_err = String::from_utf8_lossy(&output.stderr).to_string();
