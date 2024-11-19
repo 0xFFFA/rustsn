@@ -5,6 +5,8 @@ use std::fmt::Display;
 use std::str::FromStr;
 use std::sync::Mutex;
 
+use crate::docker_tool::*;
+
 mod build_tool;
 mod cache;
 mod file_explorer;
@@ -293,7 +295,7 @@ Usage:
             match *ENVTYPE.lock().unwrap() {
                 docker_tool::EnvironmentType::docker => {
                     // Check the Docker
-                    match docker_tool::check_docker(&lang) {
+                    match docker_tool::check_docker (&lang) {
                         Ok(true) => {} /* do nothing */
                         Ok(false) => {
                             // Create the image and the container

@@ -1,0 +1,84 @@
+use super::*;
+
+// This function creates image and container
+//
+// It returns true in case of success
+// And returns false in case of something goes wrong
+//
+// Here is an agreement of naming the containers
+// rustsn_<language>_container
+pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
+    let docker = Docker::connect_with_local_defaults()
+        .map_err(|e| format!("Couldn't connect to Docker: {}", e))?;
+
+    // Create context to running async functions
+    // Some Bollard::Docker functions are async
+    let rt = Runtime::new().unwrap();
+    rt.block_on(async {
+        // Set image options using language specific image name
+        // The image name is defined in Lang::get_image_name()
+        // Lang::get_image_name() defined at main.rs
+        let image_options = Some(CreateImageOptions{
+            from_image: lang.get_image_name()?,
+            ..Default::default()
+        });
+        // Create stream to get the result of creating image
+        let mut stream = docker.create_image(image_options, None, None);
+        // Process the stream
+        while let Some(result) = stream.next().await {
+            match result {
+                Ok(output) => {
+                    if *VERBOSE.lock().unwrap() {
+                        println!("Create an image: {:?}", output);
+                    }
+                },
+                Err(e) => return Err(format!("Couldn't create an image: {}", e))
+            }
+        }
+
+        // Set container name in accordance with rules of naming
+        let container_name = format!("rustsn_{}_container", lang.to_string().to_lowercase());
+
+        // Set container options
+        //let container_options = Some(CreateContainerOptions{
+        let container_options: CreateContainerOptions<String> = CreateContainerOptions {
+            name: container_name,
+            ..Default::default()
+        };
+
+        // Get an absolute path to sandbox directory
+        let sandbox_path = std::env::current_dir()
+        .map_err(|e| format!("Couldn't get the path to sandbox directory: {}", e))?
+        .join("sandbox")
+        .to_string_lossy()
+        .to_string();
+
+        // Set host config
+        let host_config = HostConfig {
+            binds: Some(vec![
+                format!("{}:/app", sandbox_path)
+            ]),
+            ..Default::default()
+        };
+
+        // Set container config
+        let config = ContainerConfig {
+            image: Some(lang.get_image_name()?),
+            tty: Some(true),
+            working_dir: Some("/app"),
+            host_config: Some(host_config),
+            ..Default::default()
+        };
+
+        // Create container
+        match docker.create_container(Some(container_options), config).await {
+            Ok(container_info) => {
+                if *VERBOSE.lock().unwrap() {
+                    println!("Container has been created: {:?}", container_info);
+                }
+                return Ok(true)
+            },
+            Err(e) => return Err(format!("Couldn't create a container: {}", e))
+        };
+    })
+}
