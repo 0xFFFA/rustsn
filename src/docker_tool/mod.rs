@@ -1,5 +1,5 @@
 /*
-This file contains the definitions of docker_tool module
+This file contains the definitions for docker_tool module
 */
 
 // Add these libs to work with a bollard::Docker
@@ -34,6 +34,7 @@ create_image_and_container.rs - create language specific image and container
 run_container.rs - run the container
 
 !!! WARNING !!!
+Necessary changes:
 - split function create_image_and_container into two functions
   - create_image
   - create_container

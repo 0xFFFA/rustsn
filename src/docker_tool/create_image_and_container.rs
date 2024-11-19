@@ -1,12 +1,20 @@
 use super::*;
 
-// This function creates image and container
-//
-// It returns true in case of success
-// And returns false in case of something goes wrong
-//
-// Here is an agreement of naming the containers
-// rustsn_<language>_container
+/*
+This function creates image and container
+
+The role is:
+1. Connects to the Docker
+2. Creates image
+3. Creates container
+
+It accepts the language as an argument.
+It returns true in case of success or false or error message otherwise.
+
+Here is an agreement of naming the containers
+rustsn_<language>_container
+*/
+
 pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
     let docker = Docker::connect_with_local_defaults()
         .map_err(|e| format!("Couldn't connect to Docker: {}", e))?;
@@ -40,7 +48,6 @@ pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
         let container_name = format!("rustsn_{}_container", lang.to_string().to_lowercase());
 
         // Set container options
-        //let container_options = Some(CreateContainerOptions{
         let container_options: CreateContainerOptions<String> = CreateContainerOptions {
             name: container_name,
             ..Default::default()
@@ -54,6 +61,8 @@ pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
         .to_string();
 
         // Set host config
+        // Here we bind the sandbox directory to the container
+        // At the container the directory is mounted at /app
         let host_config = HostConfig {
             binds: Some(vec![
                 format!("{}:/app", sandbox_path)
@@ -62,6 +71,7 @@ pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
         };
 
         // Set container config
+        // Here we define the container image, tty, working directory and host config
         let config = ContainerConfig {
             image: Some(lang.get_image_name()?),
             tty: Some(true),

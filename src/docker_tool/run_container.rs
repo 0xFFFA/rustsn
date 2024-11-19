@@ -1,15 +1,20 @@
 use super::*;
 
-// This function run the container
-//
-// It returns true in case of success
-// And returns false in case of something goes wrong
-//
-// Initially it checks that the container is running
-// If not - it starts the container
-//
-// Here is an agreement of naming the containers
-// rustsn_<language>_container
+/*
+This function runs the container.
+
+The role is:
+1. Connects to the Docker
+2. Checks that the container is running
+3. If not - it starts the container
+
+It accepts the language as an argument.
+It returns true in case of success or false or error message otherwise.
+
+Here is an agreement of naming the containers
+rustsn_<language>_container
+*/
+
 pub fn run_container (lang: &Lang) -> Result<bool, String> {
     
     // Connect to the Docker
@@ -27,10 +32,11 @@ pub fn run_container (lang: &Lang) -> Result<bool, String> {
         match docker.inspect_container(&container_name, None).await {
             Ok(container_info) => {
                 if container_info.state.unwrap().running.expect("Couldn't check the container state") {
+                    // If the container is running - return true or error message
                     return Ok(true);
                 }
                 else {
-                    // Start the container
+                    // If the container is not running - start the container
                     match docker.start_container(&container_name, None::<StartContainerOptions<String>>).await {
                         Ok(_) => {
                             if *VERBOSE.lock().unwrap() {

@@ -16,7 +16,9 @@ mod llm_response;
 mod state_machine;
 mod utils;
 mod vector_utils;
+// This section has added by AB to immpement an issue #19
 mod docker_tool;
+// End of section of issue #19
 
 static VERBOSE: Lazy<Mutex<bool>> = Lazy::new(|| Mutex::new(false));
 
@@ -151,13 +153,6 @@ Usage:
                 "docker" => {
                     println!("Selected environment: docker");
                     *ENVTYPE.lock().unwrap() = docker_tool::EnvironmentType::docker; 
-                    // This function checks:
-                    // 1. Connection to the Docker
-                    // 2. Containers contain "ollama"
-                    // 3. Images contain "ollama"
-                    // The function returns nothing in case of success
-                    // Or calls panic in other cases 
-                    // docker_tool::check_docker();
                 }
                 _ => {
                     println!("Unknown type of the environment");
@@ -166,9 +161,6 @@ Usage:
             }
         }
     }
-
-    //dbg!(environment);
-
     // End of section of issue #19
 
     let lang: Lang = matches
@@ -287,10 +279,12 @@ Usage:
             println!("Explain what the function should do:");
             let question: String = ask();
 
-            //  Check the Environment type
-            // If docker = run check_docker and if it returns false 
+            // This section has added by AB to immpement an issue #19
+
+            // Check the Environment type
+            // If docker = run docke_tool::check_docker and if it returns false 
             // (which means language specific image not found)
-            // then run create_image_and_container
+            // then docker_tool::run create_image_and_container
             // And then run the container by docker_tool::run_container
             match *ENVTYPE.lock().unwrap() {
                 docker_tool::EnvironmentType::docker => {
@@ -318,6 +312,8 @@ Usage:
                     // Do nothing
                 }
             };
+            // End of section of issue #19
+
             state_machine::run_state_machine(&lang, &question, &prompt, &mut cache, &llm);
             println!("++++++++ Finished ++++++++++++");
         }
@@ -544,6 +540,8 @@ impl FromStr for Lang {
     }
 }
 
+// This section has added by AB to immpement an issue #19
+
 impl Lang {
     pub fn get_image_name(&self) -> Result<&'static str, String>  {
         match self {
@@ -563,3 +561,5 @@ impl Lang {
         }
     }
 }
+
+// End of section of issue #19  
