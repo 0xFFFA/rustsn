@@ -9,6 +9,8 @@ use crate::llm_prompt::Prompt;
 use crate::llm_response::LLMResponse;
 use crate::{Lang, MAX_NUMBER_OF_ATTEMPTS, VERBOSE};
 
+use crate::docker_tool;
+
 pub fn run_state_machine(
     lang: &Lang,
     question: &str,
@@ -27,6 +29,8 @@ pub fn run_state_machine(
             let mut build_res = build_tool(lang, &project.build_command, cache);
             let mut test_res = build_tool(lang, &project.test_command, cache);
             if build_res.0 && test_res.0 {
+                docker_tool::stop_container (lang);
+                docker_tool::remove_container (lang);
                 return;
             } else {
                 let mut number_of_attempts = 0;
@@ -58,6 +62,8 @@ pub fn run_state_machine(
                     build_res = build_tool(lang, &project.build_command, cache);
                     test_res = build_tool(lang, &project.test_command, cache);
                     if build_res.0 && test_res.0 {
+                        docker_tool::stop_container (lang);
+                        docker_tool::remove_container (lang);
                         return;
                     }
                 }
@@ -528,4 +534,6 @@ pub fn run_state_machine(
             panic!("Unknown lang: {}", lang);
         }
     }
+    //docker_tool::stop_container (lang);
+    //docker_tool::remove_container (lang);
 }

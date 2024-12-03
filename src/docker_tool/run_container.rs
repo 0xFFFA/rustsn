@@ -33,6 +33,7 @@ pub fn run_container (lang: &Lang) -> Result<bool, String> {
             Ok(container_info) => {
                 if container_info.state.unwrap().running.expect("Couldn't check the container state") {
                     // If the container is running - return true or error message
+                    println!("Container {} is already running", container_name);
                     return Ok(true);
                 }
                 else {
@@ -51,4 +52,4 @@ pub fn run_container (lang: &Lang) -> Result<bool, String> {
             Err(e) => return Err(format!("Couldn't check the container {}: {}", container_name, e))
         };
     })
-}
+} 

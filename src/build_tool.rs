@@ -3,6 +3,7 @@ use crate::llm_response::Project;
 use crate::{Lang, VERBOSE};
 
 use crate::docker_tool::EnvironmentType;
+use crate::docker_tool;
 use bollard::exec::{CreateExecOptions as ExecCreateOpts, StartExecResults as ExecOutput};
 use std::process::ExitStatus;
 use tokio::runtime::Runtime;
@@ -17,12 +18,16 @@ use users::{get_current_uid, get_current_gid};
 //
 // It returns the exit code and the output of the command which has been run
 
+#[inline(never)]
 pub fn run_execution (
     environment: &EnvironmentType,
     lang: &Lang,
     command_str: &str,
 ) -> Result<std::process::Output, String>
 {
+
+    use docker_tool::create_container::inspect_path;
+
     // If environment is host then run the command in the host
     match environment {
         EnvironmentType::host => {
@@ -43,16 +48,20 @@ pub fn run_execution (
             // Run the async functions
             rt.block_on(async {
 
-                let command_parts = command_str.split(" ").collect::<Vec<&str>>();
+                docker_tool::create_container::inspect_path().await;
+
+                let mut command_parts = command_str.split(" ").collect::<Vec<&str>>();
+                //command_parts.insert (0, "/bin/bash -c");
+                dbg!(&command_parts);
                 let args = command_parts[1..].to_vec();
+                dbg!(&args);
                 let mut cmd_vec = command_parts;
-                cmd_vec.extend(args);
+                dbg!(&cmd_vec);
+
                 
                 // Connect to the Docker
-                let docker = match Docker::connect_with_socket_defaults() {
-                    Ok (docker) => docker,
-                    Err (e) => panic!("Couldn't connect to Docker {:?}", e)
-                };
+                let docker = Docker::connect_with_socket_defaults()
+                    .map_err(|e| format!("Couldn't connect to Docker: {}", e))?;
                 
                 let container_name = format!("rustsn_{}_container", lang.to_string().to_lowercase());
                 let user_id = get_current_uid();
@@ -71,9 +80,12 @@ pub fn run_execution (
                     .join("sandbox")
                     .to_string_lossy()
                     .to_string();
+                //let sandbox_path = "/home/dev/rust/rustsn/sandbox";
 
                 println!("Cmd_vec is: {:?}", cmd_vec);
+                println!("Sandbox path is: {:?}", sandbox_path);
 
+                // Documentation is: https://docs.rs/bollard/latest/bollard/exec/struct.CreateExecOptions.html
                 let exec_config = ExecCreateOpts {
                     cmd: Some(cmd_vec),
                     user: Some(&binding), // Указываем пользователя и группу
@@ -83,15 +95,21 @@ pub fn run_execution (
                     ..Default::default()
                 };
                 
+                dbg!(&exec_config);
+
                 // Create a exec process
                 let exec = docker.create_exec(&container_name, exec_config)
                     .await
                     .map_err(|e| format!("Exec creation error: {}", e));
+
+                dbg!(&exec);
                 
                 // Start the exec process
                 let output = docker.start_exec(&exec.unwrap().id, None)
                     .await
                     .map_err(|e| format!("Exec start error: {}", e));
+
+                dbg!(&output);
 
                 // Handle the output of the exec process and
                 // convert it into the std::process::Output
@@ -105,6 +123,7 @@ pub fn run_execution (
                     
                         // Handle the output stream
                         while let Some(result) = output.next().await {
+                            dbg!(&result);
                             match result {
                                 Ok(LogOutput::StdOut { message }) => stdout.extend(message),
                                 Ok(LogOutput::StdErr { message }) => stderr.extend(message),
@@ -113,9 +132,9 @@ pub fn run_execution (
                             }
                         }
 
-                        println! ("Stdout is {:?}", &stdout);
-                        println! ("Stderr os {:?}", &stderr);
-                    
+                        dbg! (&stdout);
+                        dbg! (&stderr);
+
                         return Ok(std::process::Output {
                             stdout,
                             stderr,
@@ -124,6 +143,7 @@ pub fn run_execution (
                     }
                     Ok(StartExecResults::Detached) => {
                         // Обработка отсоединенного режима
+             
                         return Ok(std::process::Output {
                             stdout: Vec::new(),
                             stderr: Vec::new(),
@@ -133,7 +153,7 @@ pub fn run_execution (
                     Err(e) => {
                         return Err(format!("Exec start error: {}", e));
                     }
-                };    
+                };
             })
         }
     }
@@ -164,6 +184,7 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         Ok(output) => output,
                         Err(e) => return (false, e)
                     };
+                    dbg!(&output);
                     // End of section of issue #19
                     let exit_code = output.status.code().unwrap();
                     // let std_out = String::from_utf8_lossy(output.stdout).unwrap();
@@ -212,7 +233,6 @@ pub fn build_tool(lang: &Lang, command_str: &str, cache: &mut Cache) -> (bool, S
                         command_parts[0].to_string()
                     };
                     /*
-                    Commented old functionality
                     let output = std::process::Command::new(command)
                         .args(args)
                         .current_dir("sandbox")

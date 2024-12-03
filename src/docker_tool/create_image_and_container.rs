@@ -60,6 +60,8 @@ pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
         .to_string_lossy()
         .to_string();
 
+        println!("From fn create_image_and_container: sandbox_path: {}", sandbox_path);
+
         // Set host config
         // Here we bind the sandbox directory to the container
         // At the container the directory is mounted at /app
@@ -73,6 +75,7 @@ pub fn create_image_and_container(lang: &Lang) -> Result<bool, String> {
         // Set container config
         // Here we define the container image, tty, working directory and host config
         let config = ContainerConfig {
+            //user: Some("dev"),
             image: Some(lang.get_image_name()?),
             tty: Some(true),
             working_dir: Some("/app"),

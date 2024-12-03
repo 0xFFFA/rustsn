@@ -282,20 +282,38 @@ Usage:
             // This section has added by AB to immpement an issue #19
 
             // Check the Environment type
-            // If docker = run docke_tool::check_docker and if it returns false 
+            // If "docker" then run docker_tool::check_docker and if it returns false 
             // (which means language specific image not found)
-            // then docker_tool::run create_image_and_container
+            // then docker_tool::run create_image and then create container
             // And then run the container by docker_tool::run_container
             match *ENVTYPE.lock().unwrap() {
                 docker_tool::EnvironmentType::docker => {
                     // Check the Docker
                     match docker_tool::check_docker (&lang) {
-                        Ok(true) => {} /* do nothing */
-                        Ok(false) => {
-                            // Create the image and the container
-                            if let Err(e) = docker_tool::create_image_and_container(&lang) {
+                        Ok(true) => {
+                            if let Err(e) = docker_tool::create_container(&lang) {
                                 panic!("Failed to create container: {}", e);
                             }
+                        }
+                        Ok(false) => {
+                            // Create the image and the container
+                            // Firstly ask the user about his agreement to create an image
+                            println!("Do you agree to create an image? (y/n)");
+                            let mut answer = String::new();
+                            std::io::stdin().read_line(&mut answer).unwrap();
+                            if answer.trim() == "y" {
+                                // Create the image
+                                if let Err(e) = docker_tool::create_image(&lang) {
+                                    panic!("Failed to create image: {}", e);
+                                }
+                                if let Err(e) = docker_tool::create_container(&lang) {
+                                    panic!("Failed to create container: {}", e);
+                                }
+                            } else {
+                                panic!("Couldn't create an image cause of user restictions, you can create an image manually");
+                            }
+
+
                         },
                         Err(e) => panic!("Couldn't connect to Docker: {}", e)
                     };

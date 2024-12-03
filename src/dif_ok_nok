@@ -1,0 +1,214 @@
+[								[
+    {								    {
+        "Id": "3b4dcc4124df0a7438f31789f3164a32d8eb74a8c972b1	        "Id": "3b4dcc4124df0a7438f31789f3164a32d8eb74a8c972b1
+        "Created": "2024-11-27T12:31:32.81303031Z",		        "Created": "2024-11-27T12:31:32.81303031Z",
+        "Path": "bash",						        "Path": "bash",
+        "Args": [],						        "Args": [],
+        "State": {						        "State": {
+            "Status": "running",				            "Status": "running",
+            "Running": true,					            "Running": true,
+            "Paused": false,					            "Paused": false,
+            "Restarting": false,				            "Restarting": false,
+            "OOMKilled": false,					            "OOMKilled": false,
+            "Dead": false,					            "Dead": false,
+            "Pid": 1060760,					            "Pid": 1060760,
+            "ExitCode": 0,					            "ExitCode": 0,
+            "Error": "",					            "Error": "",
+            "StartedAt": "2024-11-27T12:31:33.010384498Z",	            "StartedAt": "2024-11-27T12:31:33.010384498Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"		            "FinishedAt": "0001-01-01T00:00:00Z"
+        },							        },
+        "Image": "sha256:d7ea9ee7bf87e21c7fae8295ac0f11f22710	        "Image": "sha256:d7ea9ee7bf87e21c7fae8295ac0f11f22710
+        "ResolvConfPath": "/var/lib/docker/containers/3b4dcc4	        "ResolvConfPath": "/var/lib/docker/containers/3b4dcc4
+        "HostnamePath": "/var/lib/docker/containers/3b4dcc412	        "HostnamePath": "/var/lib/docker/containers/3b4dcc412
+        "HostsPath": "/var/lib/docker/containers/3b4dcc4124df	        "HostsPath": "/var/lib/docker/containers/3b4dcc4124df
+        "LogPath": "/var/lib/docker/containers/3b4dcc4124df0a	        "LogPath": "/var/lib/docker/containers/3b4dcc4124df0a
+        "Name": "/rustsn_rust_container",			        "Name": "/rustsn_rust_container",
+        "RestartCount": 0,					        "RestartCount": 0,
+        "Driver": "overlay2",					        "Driver": "overlay2",
+        "Platform": "linux",					        "Platform": "linux",
+        "MountLabel": "",					        "MountLabel": "",
+        "ProcessLabel": "",					        "ProcessLabel": "",
+        "AppArmorProfile": "docker-default",			        "AppArmorProfile": "docker-default",
+        "ExecIDs": [						        "ExecIDs": [
+            "da761658855b1644eee7391dc999167294d12827b456f575	            "da761658855b1644eee7391dc999167294d12827b456f575
+        ],							        ],
+        "HostConfig": {						        "HostConfig": {
+            "Binds": [						            "Binds": [
+                "/home/dev/rust/rustsn/src/sandbox:/app"	                "/home/dev/rust/rustsn/src/sandbox:/app"
+            ],							            ],
+            "ContainerIDFile": "",				            "ContainerIDFile": "",
+            "LogConfig": {					            "LogConfig": {
+                "Type": "json-file",				                "Type": "json-file",
+                "Config": {}					                "Config": {}
+            },							            },
+            "NetworkMode": "bridge",				            "NetworkMode": "bridge",
+            "PortBindings": null,				            "PortBindings": null,
+            "RestartPolicy": {					            "RestartPolicy": {
+                "Name": "no",					                "Name": "no",
+                "MaximumRetryCount": 0				                "MaximumRetryCount": 0
+            },							            },
+            "AutoRemove": false,				            "AutoRemove": false,
+            "VolumeDriver": "",					            "VolumeDriver": "",
+            "VolumesFrom": null,				            "VolumesFrom": null,
+            "ConsoleSize": [					            "ConsoleSize": [
+                0,						                0,
+                0						                0
+            ],							            ],
+            "CapAdd": null,					            "CapAdd": null,
+            "CapDrop": null,					            "CapDrop": null,
+            "CgroupnsMode": "private",				            "CgroupnsMode": "private",
+            "Dns": null,					            "Dns": null,
+            "DnsOptions": null,					            "DnsOptions": null,
+            "DnsSearch": null,					            "DnsSearch": null,
+            "ExtraHosts": null,					            "ExtraHosts": null,
+            "GroupAdd": null,					            "GroupAdd": null,
+            "IpcMode": "private",				            "IpcMode": "private",
+            "Cgroup": "",					            "Cgroup": "",
+            "Links": null,					            "Links": null,
+            "OomScoreAdj": 0,					            "OomScoreAdj": 0,
+            "PidMode": "",					            "PidMode": "",
+            "Privileged": false,				            "Privileged": false,
+            "PublishAllPorts": false,				            "PublishAllPorts": false,
+            "ReadonlyRootfs": false,				            "ReadonlyRootfs": false,
+            "SecurityOpt": null,				            "SecurityOpt": null,
+            "UTSMode": "",					            "UTSMode": "",
+            "UsernsMode": "",					            "UsernsMode": "",
+            "ShmSize": 67108864,				            "ShmSize": 67108864,
+            "Runtime": "runc",					            "Runtime": "runc",
+            "Isolation": "",					            "Isolation": "",
+            "CpuShares": 0,					            "CpuShares": 0,
+            "Memory": 0,					            "Memory": 0,
+            "NanoCpus": 0,					            "NanoCpus": 0,
+            "CgroupParent": "",					            "CgroupParent": "",
+            "BlkioWeight": 0,					            "BlkioWeight": 0,
+            "BlkioWeightDevice": null,				            "BlkioWeightDevice": null,
+            "BlkioDeviceReadBps": null,				            "BlkioDeviceReadBps": null,
+            "BlkioDeviceWriteBps": null,			            "BlkioDeviceWriteBps": null,
+            "BlkioDeviceReadIOps": null,			            "BlkioDeviceReadIOps": null,
+            "BlkioDeviceWriteIOps": null,			            "BlkioDeviceWriteIOps": null,
+            "CpuPeriod": 0,					            "CpuPeriod": 0,
+            "CpuQuota": 0,					            "CpuQuota": 0,
+            "CpuRealtimePeriod": 0,				            "CpuRealtimePeriod": 0,
+            "CpuRealtimeRuntime": 0,				            "CpuRealtimeRuntime": 0,
+            "CpusetCpus": "",					            "CpusetCpus": "",
+            "CpusetMems": "",					            "CpusetMems": "",
+            "Devices": null,					            "Devices": null,
+            "DeviceCgroupRules": null,				            "DeviceCgroupRules": null,
+            "DeviceRequests": null,				            "DeviceRequests": null,
+            "MemoryReservation": 0,				            "MemoryReservation": 0,
+            "MemorySwap": 0,					            "MemorySwap": 0,
+            "MemorySwappiness": null,				            "MemorySwappiness": null,
+            "OomKillDisable": null,				            "OomKillDisable": null,
+            "PidsLimit": null,					            "PidsLimit": null,
+            "Ulimits": null,					            "Ulimits": null,
+            "CpuCount": 0,					            "CpuCount": 0,
+            "CpuPercent": 0,					            "CpuPercent": 0,
+            "IOMaximumIOps": 0,					            "IOMaximumIOps": 0,
+            "IOMaximumBandwidth": 0,				            "IOMaximumBandwidth": 0,
+            "MaskedPaths": [					            "MaskedPaths": [
+                "/proc/asound",					                "/proc/asound",
+                "/proc/acpi",					                "/proc/acpi",
+                "/proc/kcore",					                "/proc/kcore",
+                "/proc/keys",					                "/proc/keys",
+                "/proc/latency_stats",				                "/proc/latency_stats",
+                "/proc/timer_list",				                "/proc/timer_list",
+                "/proc/timer_stats",				                "/proc/timer_stats",
+                "/proc/sched_debug",				                "/proc/sched_debug",
+                "/proc/scsi",					                "/proc/scsi",
+                "/sys/firmware",				                "/sys/firmware",
+                "/sys/devices/virtual/powercap"			                "/sys/devices/virtual/powercap"
+            ],							            ],
+            "ReadonlyPaths": [					            "ReadonlyPaths": [
+                "/proc/bus",					                "/proc/bus",
+                "/proc/fs",					                "/proc/fs",
+                "/proc/irq",					                "/proc/irq",
+                "/proc/sys",					                "/proc/sys",
+                "/proc/sysrq-trigger"				                "/proc/sysrq-trigger"
+            ]							            ]
+        },							        },
+        "GraphDriver": {					        "GraphDriver": {
+            "Data": {						            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/2fba84f	                "LowerDir": "/var/lib/docker/overlay2/2fba84f
+                "MergedDir": "/var/lib/docker/overlay2/2fba84	                "MergedDir": "/var/lib/docker/overlay2/2fba84
+                "UpperDir": "/var/lib/docker/overlay2/2fba84f	                "UpperDir": "/var/lib/docker/overlay2/2fba84f
+                "WorkDir": "/var/lib/docker/overlay2/2fba84f0	                "WorkDir": "/var/lib/docker/overlay2/2fba84f0
+            },							            },
+            "Name": "overlay2"					            "Name": "overlay2"
+        },							        },
+        "Mounts": [						        "Mounts": [
+            {							            {
+                "Type": "bind",					                "Type": "bind",
+                "Source": "/home/dev/rust/rustsn/src/sandbox"	                "Source": "/home/dev/rust/rustsn/src/sandbox"
+                "Destination": "/app",				                "Destination": "/app",
+                "Mode": "",					                "Mode": "",
+                "RW": true,					                "RW": true,
+                "Propagation": "rprivate"			                "Propagation": "rprivate"
+            }							            }
+        ],							        ],
+        "Config": {						        "Config": {
+            "Hostname": "3b4dcc4124df",				            "Hostname": "3b4dcc4124df",
+            "Domainname": "",					            "Domainname": "",
+            "User": "",						            "User": "",
+            "AttachStdin": false,				            "AttachStdin": false,
+            "AttachStdout": false,				            "AttachStdout": false,
+            "AttachStderr": false,				            "AttachStderr": false,
+            "Tty": true,					            "Tty": true,
+            "OpenStdin": false,					            "OpenStdin": false,
+            "StdinOnce": false,					            "StdinOnce": false,
+            "Env": [						            "Env": [
+                "PATH=/usr/local/cargo/bin:/usr/local/sbin:/u	                "PATH=/usr/local/cargo/bin:/usr/local/sbin:/u
+                "RUSTUP_HOME=/usr/local/rustup",		                "RUSTUP_HOME=/usr/local/rustup",
+                "CARGO_HOME=/usr/local/cargo",			                "CARGO_HOME=/usr/local/cargo",
+                "RUST_VERSION=1.82.0"				                "RUST_VERSION=1.82.0"
+            ],							            ],
+            "Cmd": [						            "Cmd": [
+                "bash"						                "bash"
+            ],							            ],
+            "Image": "rust:latest",				            "Image": "rust:latest",
+            "Volumes": null,					            "Volumes": null,
+            "WorkingDir": "/app",				            "WorkingDir": "/app",
+            "Entrypoint": null,					            "Entrypoint": null,
+            "OnBuild": null,					            "OnBuild": null,
+            "Labels": {						            "Labels": {
+                "org.opencontainers.image.source": "https://g	                "org.opencontainers.image.source": "https://g
+            }							            }
+        },							        },
+        "NetworkSettings": {					        "NetworkSettings": {
+            "Bridge": "",					            "Bridge": "",
+            "SandboxID": "608c0d11fb07ea6d5b23cab5f34316b5450	            "SandboxID": "608c0d11fb07ea6d5b23cab5f34316b5450
+            "SandboxKey": "/var/run/docker/netns/608c0d11fb07	            "SandboxKey": "/var/run/docker/netns/608c0d11fb07
+            "Ports": {},					            "Ports": {},
+            "HairpinMode": false,				            "HairpinMode": false,
+            "LinkLocalIPv6Address": "",				            "LinkLocalIPv6Address": "",
+            "LinkLocalIPv6PrefixLen": 0,			            "LinkLocalIPv6PrefixLen": 0,
+            "SecondaryIPAddresses": null,			            "SecondaryIPAddresses": null,
+            "SecondaryIPv6Addresses": null,			            "SecondaryIPv6Addresses": null,
+            "EndpointID": "5f03baf23d5cf04a6e7aa1c3dbb172a917	            "EndpointID": "5f03baf23d5cf04a6e7aa1c3dbb172a917
+            "Gateway": "172.17.0.1",				            "Gateway": "172.17.0.1",
+            "GlobalIPv6Address": "",				            "GlobalIPv6Address": "",
+            "GlobalIPv6PrefixLen": 0,				            "GlobalIPv6PrefixLen": 0,
+            "IPAddress": "172.17.0.3",				            "IPAddress": "172.17.0.3",
+            "IPPrefixLen": 16,					            "IPPrefixLen": 16,
+            "IPv6Gateway": "",					            "IPv6Gateway": "",
+            "MacAddress": "02:42:ac:11:00:03",			            "MacAddress": "02:42:ac:11:00:03",
+            "Networks": {					            "Networks": {
+                "bridge": {					                "bridge": {
+                    "IPAMConfig": null,				                    "IPAMConfig": null,
+                    "Links": null,				                    "Links": null,
+                    "Aliases": null,				                    "Aliases": null,
+                    "MacAddress": "02:42:ac:11:00:03",		                    "MacAddress": "02:42:ac:11:00:03",
+                    "DriverOpts": null,				                    "DriverOpts": null,
+                    "NetworkID": "d61a78b309913573348137b547c	                    "NetworkID": "d61a78b309913573348137b547c
+                    "EndpointID": "5f03baf23d5cf04a6e7aa1c3db	                    "EndpointID": "5f03baf23d5cf04a6e7aa1c3db
+                    "Gateway": "172.17.0.1",			                    "Gateway": "172.17.0.1",
+                    "IPAddress": "172.17.0.3",			                    "IPAddress": "172.17.0.3",
+                    "IPPrefixLen": 16,				                    "IPPrefixLen": 16,
+                    "IPv6Gateway": "",				                    "IPv6Gateway": "",
+                    "GlobalIPv6Address": "",			                    "GlobalIPv6Address": "",
+                    "GlobalIPv6PrefixLen": 0,			                    "GlobalIPv6PrefixLen": 0,
+                    "DNSNames": null				                    "DNSNames": null
+                }						                }
+            }							            }
+        }							        }
+    }								    }
+]								]

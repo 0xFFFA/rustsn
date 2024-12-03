@@ -9,8 +9,13 @@
             "request": "launch",
             "name": "Debug",
             "program": "/home/dev/rust/rustsn/target/debug/rustsn",
-            "args": "--environment=docker",
-            "cwd": "${workspaceFolder}"
+            "args": ["--environment=docker",
+                    "--lang=rust",
+                    "--verbose",
+                    "generate"
+                    ],
+            "cwd": "${workspaceFolder}",
+            "sourceLanguages": ["rust"]
         }
     ]
 }

@@ -28,27 +28,52 @@ pub enum EnvironmentType {
 Define the modules of docker_tool
 One function - one file
 
-check_docker_images.rs - check the list of language specific images
-check_docker.rs - check the Docker status
-create_image_and_container.rs - create language specific image and container
-run_container.rs - run the container
+check_docker_images.rs - checks the list of language specific images, this function uses by check_docker function
+check_docker.rs - checks the Docker status
+create_image_and_container.rs - OLD function, splits to two separate functions. creates language specific image and container
+run_container.rs - runs the container
+stop_container.rs - stops the container
 
 !!! WARNING !!!
 Necessary changes:
-- split function create_image_and_container into two functions
-  - create_image
-  - create_container
-- add new function check_docker_container
-- add new function stop_container
-- add new function remove_container
-- add prompt to function create_image to download image from the Docker Hub
+- split function create_image_and_container into two functions DONE
+  - create_image DONE
+  - create_container DINE
+- add new function remove_container DONE
+- add prompt to function create_image to download image from the Docker Hub DONE
+
+- add functionality to check and stop container then the app starts
+- remove from code fn create_image_and_container
+
 */
 pub mod check_docker_images;
 pub mod check_docker;
 pub mod create_image_and_container;
 pub mod run_container;
+pub mod stop_container;
+pub mod remove_container;
+pub mod create_image;
+pub mod create_container;
 
 pub use check_docker_images::check_docker_images;
 pub use check_docker::check_docker;
 pub use create_image_and_container::create_image_and_container;
 pub use run_container::run_container;
+pub use stop_container::stop_container;
+pub use remove_container::remove_container;
+pub use create_image::create_image;
+pub use create_container::create_container;
+
+
+/*
+
+There is some idea to release this module like an object
+Structure this has entity image and vector of entities for containers
+And define the functions for the structure
+check image, check container, create image, create container, run container, stop container,
+remove container, remove image
+Probably it could be much consisten then this separate functions
+But it means it is neccesary to change a lot of code, because
+it would be necessary to transfer the variable this contain a value of structcure 
+from function to function
+*/
